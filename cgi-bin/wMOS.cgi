@@ -14,6 +14,7 @@ use strict;
 use FileHandle;
 use CGI::Carp 'fatalsToBrowser';
 use Cwd;
+use XML::Simple;
 use File::Slurp;
 use vars qw (%video_list @grp);
 use FindBin;
@@ -60,9 +61,9 @@ if (@fields ==0) {
 
 	<p> Please Click the 'start MOS' button to start the test </p>
 EndHTML
-	print start_form(-method=>'POST', -action=>"/cgi-bin/$script_name", -onSubmit=>"javascript:return checkMACAddress();"),"<em> Mac Address : </em>", 
-		textfield( -name => 'client_mac', -id => 'mac', -default => 'FF:FF:FF:FF:FF:FF', -size => 17, -maxlength => 17),
-		popup_menu( -name => 'local',-value =>\@grp, -default=> 'none'), 
+	print start_form(-method=>'POST', -action=>"/cgi-bin/$script_name", -onSubmit=>"javascript:return checkMACAddress();"),"<em> Mac Address  : </em>", 
+		textfield( -name => 'client_mac', -id => 'mac', -default => 'FF:FF:FF:FF:FF:FF', -size => 17, -maxlength => 17), "</p><em> WLC Location : </em>" ,
+		popup_menu( -name => 'local',-value =>\@grp, -default=> 'unknown'), 
 		"<br>", submit(-name=>'sub_form', -value=>'Start MOS'), end_form, hr;
 } elsif (param('wMOS')) {
 	my $wMOS = param('wMOS');
@@ -125,12 +126,12 @@ ENDHTML
 	my $default = 1;
 	foreach my $video (keys %video_list){
 		if($default){
-			print "<div id='$video' class='video' style='display: none'>\n";
+			print "<div id='$video' class='video' style='display: block'>\n";
 			$default = 0;
 		} else {
 			print "<div id='$video' class='video' style='display: none'>\n";
 		}
-		print "<video poster='/icon/$video.$video_list{$video}{'icon'}' height='$video_list{$video}{'height'}' width='$video_list{$video}{'width'}' controls>\n";
+		print "<video poster='/icons/$video.$video_list{$video}{'icon'}' height='$video_list{$video}{'height'}' width='$video_list{$video}{'width'}' controls>\n";
 				
 		foreach my $code (@{$video_list{$video}{'code'}}){
 			my $video_src = "<source src='/video/$video.$code' type='video/$code' />\n";

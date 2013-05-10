@@ -61,7 +61,8 @@ my $clientMAC_dec = mac_hex_decimal($clientMAC);
 #mac_hex_decimal($client_mac_hex);
 my $threadsThreshold = Thread::Semaphore->new($maxThreads);
 foreach my $grp (keys %wlc_grp){
-	if ($grp eq $local || $local eq "none"){
+    last if $thread_die == 1;
+	if ($grp eq $local || $local eq "unknown"){
 		foreach my $wlc (@{$wlc_grp{$grp}{'host'}}){
 			$threadsThreshold->down;
 			my $t = threads->new(\&search_client, $wlc, $wlc_grp{$grp}{'community'}, $clientIP, $clientMAC_dec);
@@ -78,12 +79,16 @@ sub search_client {
 	
 	my ($client_mac_dec, $ap_mac_dec, $ap_ip, $ap_slot_id, $client_ch);
 	# create SNMP session
-	if ($thread_die == 1) { return; } # kill the threads;
+	if ($thread_die == 1) { 
+        $threadsThreshold->up;
+        return; 
+    } # kill the threads;
 	
 	my ($error, $session) = snmp_connect($host, $community);
 	if (!$session) {
 		print "ERROR:$error";
-	    exit 1;
+        $threadsThreshold->up;
+        return;	    
 	} else {
         my $client_status;
 		if (!$clientMAC_dec){ # search the client MAC by IP in WLC
@@ -108,15 +113,12 @@ sub search_client {
 			my $client_status = $session->get_request(-varbindlist => ["$OID_grp_bsnMobileStationStatus.$client_mac_dec"] );
 			if ($$client_status{"$OID_grp_bsnMobileStationStatus.$client_mac_dec"} == 3){
 				my $client_ap_info = $session->get_request(-varbindlist => [ "$OID_grp_bsnMobileStationAPMacAddr.$client_mac_dec", "$OID_grp_bsnMobileStationAPIfSlotId.$client_mac_dec" ] );
-                print $$client_ap_info{"$OID_grp_bsnMobileStationAPMacAddr.$client_mac_dec"}  . "\n";
 				$ap_mac_dec = mac_hex_decimal(format_mac_hex($$client_ap_info{"$OID_grp_bsnMobileStationAPMacAddr.$client_mac_dec"}));
-                print $ap_mac_dec  . "\n";
 				$ap_slot_id = $$client_ap_info{"$OID_grp_bsnMobileStationAPIfSlotId.$client_mac_dec"};
 				$client_ap_info = $session->get_request(-varbindlist => [ "$OID_grp_bsnApIpAddress.$ap_mac_dec", "$OID_grp_bsnAPIfPhyChannelNumber.$ap_mac_dec.$ap_slot_id" ] );
 				$ap_ip = $$client_ap_info{"$OID_grp_bsnApIpAddress.$ap_mac_dec"};
 				$client_ch = $$client_ap_info{"$OID_grp_bsnAPIfPhyChannelNumber.$ap_mac_dec.$ap_slot_id"};
 				$thread_die = 1;
-				print "$perl $FindBin::Bin/collectData.pl $host $community $client_ip $client_mac_dec $ap_mac_dec $ap_ip $ap_slot_id $client_ch $output &>/dev/null &\n";
 				system("$perl $FindBin::Bin/collectData.pl $host $community $client_ip $client_mac_dec $ap_mac_dec $ap_ip $ap_slot_id $client_ch $output &>/dev/null &");				
 			}
 		}

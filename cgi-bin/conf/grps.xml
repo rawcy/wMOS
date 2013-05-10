@@ -1,0 +1,18 @@
+<!-- #########################################
+##  Author:       Yin Chen                  ##                     
+##  Contact:      yinche@cisco.com          ##
+##  Data:         May 9 2013                ##
+##  Project:      wMOS                      ##
+########################################## -->
+
+
+<wlc>
+	<grp>cisco</grp>
+	<grp>Manhattan</grp>
+	<grp>Queens</grp>
+	<grp>TheBronx</grp>
+	<grp>Brooklyn</grp>
+	<grp>StatenIsland</grp>
+</wlc>
+
+	

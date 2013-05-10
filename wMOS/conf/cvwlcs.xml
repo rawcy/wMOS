@@ -1,0 +1,31 @@
+<!-- #########################################
+##  Author:       Yin Chen                  ##                     
+##  Contact:      yinche@cisco.com          ##
+##  Data:         Oct 24 2012               ##
+##  Project:      wMOS                      ##
+########################################## -->
+
+
+<WLCs>
+	<wlc_group name="cisco" community="public">
+		<host>10.89.234.75</host>
+	</wlc_group>
+	<wlc_group name="Hicksville" community="tH3MuCh@tRD">
+		<host>10.248.78.69</host>
+		<host>10.248.78.71</host>
+		<host>10.248.78.73</host>
+		<host>10.248.78.75</host>
+		<host>10.248.78.77</host>
+		<host>10.248.78.79</host>
+		<host>10.248.78.81</host>
+		<host>10.248.78.83</host>
+		<host>10.248.78.101</host>
+		<host>10.248.78.103</host>
+		<host>10.248.78.105</host>
+		<host>10.248.78.107</host>
+		<host>10.248.78.109</host>
+		<host>10.248.78.111</host>
+		<host>10.248.78.113</host>
+		<host>10.248.78.115</host>
+	</wlc_group>
+</WLCs>

@@ -12,7 +12,7 @@ use strict;
 use warnings;
 use Exporter;
 our @ISA = 'Exporter';
-our @EXPORT = qw($OID_sysUpTime $OID_agentCurrentCPUUtilization $OID_agentFreeMemory $OID_cisco_product
+our @EXPORT = qw($OID_sysUpTime $OID_agentCurrentCPUUtilization $OID_agentFreeMemory $OID_bsnAPStatsTimer $OID_cisco_product
 				$OID_bsnAPNumOfSlot $OID_grp_bsnMobileStationIpAddress $OID_grp_bsnMobileStationAPIfSlotId
 				$OID_grp_bsnMobileStationAPMacAddr  $OID_grp_bsnApIpAddress $OID_grp_bsnMobileStationStatus $OID_grp_bsnMobileStationStatsEntry
 				$OID_grp_bsnAPIfLoadParametersEntry $OID_grp_bsnAPIfLoadParametersEntry $OID_grp_bsnAPIfChannelInterferenceInfoEntry
@@ -22,7 +22,7 @@ our @EXPORT = qw($OID_sysUpTime $OID_agentCurrentCPUUtilization $OID_agentFreeMe
 our $OID_sysUpTime = '.1.3.6.1.2.1.1.3.0';
 our $OID_agentCurrentCPUUtilization ='.1.3.6.1.4.1.14179.1.1.5.1.0';
 our $OID_agentFreeMemory = '.1.3.6.1.4.1.14179.1.1.5.3.0';
-
+our $OID_bsnAPStatsTimer = '.1.3.6.1.4.1.14179.2.2.1.1.12';
 
 our $OID_cisco_product = '.1.3.6.1.4.1.9.1.1279';
 our $OID_bsnAPNumOfSlot = '.1.3.6.1.4.1.14179.2.2.1.1.6';

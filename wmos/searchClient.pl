@@ -42,11 +42,11 @@ if (@ARGV >= 2) {
 	exit 1;
 }
 
-if (! -r "$FindBin::Bin/conf/wMOS.conf") {
-     print "ERROR: wMOS.conf is not readable\n";
+if (! -r "$FindBin::Bin/conf/wmos.conf") {
+     print "ERROR: wmos.conf is not readable\n";
      exit 2;
 }
-require "$FindBin::Bin/conf/wMOS.conf";
+require "$FindBin::Bin/conf/wmos.conf";
 
 # global variables
 my $perl = '/usr/bin/perl';

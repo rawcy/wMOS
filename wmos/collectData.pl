@@ -16,14 +16,15 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 use OIDS;
 
+use vars qw ($delay_cycle $samplingrate $default_samplingrate);
+
 my $log_dir = "$FindBin::Bin/tmp";
 require "$FindBin::Bin/common_snmp.pl";
+require "$FindBin::Bin/conf/wmos.conf";
 
-
-my ($host, $community, $client_ip, $client_mac_dec, $ap_mac_dec, $ap_ip, $ap_slot_id, $client_ch, $output, @threads, $ERR, $WARN);
+my ($host, $community, $client_ip, $client_mac_dec, $ap_mac_dec, $ap_ip, $ap_slot_id, $client_ch, $output, @threads, $ERR, $WARN, $samplingrate);
 $SIG{TERM} = \&interrupt;
 my $term = 1;
-my $delay_cycle = 2;
 
 # retrieve the %client_list
 if (@ARGV >= 9) {
@@ -48,7 +49,7 @@ if (!-d $log_dir){
 
 # log the session info 
 my $logfile = "$log_dir/$output.log";
-print $logfile . "\n";
+#print $logfile . "\n";
 my $fh = FileHandle->new();
 my $client_mac_hex = format_mac_decimal($client_mac_dec);
 my $ap_mac_hex = format_mac_decimal($ap_mac_dec);
@@ -61,9 +62,11 @@ close $fh;
 # create SNMP session 
 my ($error, $session) = snmp_connect($host, $community);
 my $csvfile = "$log_dir/$output.csv";
-print $csvfile . "\n";
+#print $csvfile . "\n";
 my @interested_oid = ();
-	
+
+my $set_samplingrate = $session->set_request(-varbindlist => ["$OID_bsnAPStatsTimer.$ap_mac_dec", INTEGER, $samplingrate],);
+
 if (! -e $csvfile){
 	open($fh, "> $csvfile");
 	print $fh "timestamp,";
@@ -92,7 +95,7 @@ do{
 		print $fh $$stationstats{"$key"} . ",";
 	}
 	print $fh "\n";
-	while ((time - $start) lt 5) {}
+	while ((time - $start) lt $samplingrate) {}
 	if ($term ==2){
 		$term = 0 if $delay_cycle == 0;
 		$delay_cycle--;
@@ -103,6 +106,7 @@ close $fh;
 $session->close();
 
 sub interrupt {
+	my $set_samplingrate = $session->set_request(-varbindlist => ["$OID_bsnAPStatsTimer.$ap_mac_dec", INTEGER, $default_samplingrate],);
     $term = 2;
 }
 

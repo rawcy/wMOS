@@ -16,10 +16,10 @@ use CGI::Carp 'fatalsToBrowser';
 use Cwd;
 use XML::Simple;
 use File::Slurp;
-use vars qw (%video_list @grp);
+use vars qw (%video_list @grp $wmosserver $wmosuser $serchclient $collectData $submitwmos $perl $ssh);
 use FindBin;
 
-require "$FindBin::Bin/conf/wMOSweb.conf";
+require "$FindBin::Bin/conf/wmosweb.conf";
 
 $ENV{PATH}="/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin";
 my $email = "yinche\@cisco.com";
@@ -28,19 +28,9 @@ my $host = $ENV{'SERVER_NAME'};
 my $clients_info;
 my $info_text;
 my $cur_dir = getcwd(); 
-my $perl = '/usr/bin/perl';
-my $ssh = '/usr/bin/ssh';
 my $script_name = $0;
 $script_name =~ s/$cur_dir\///;
-	
-my $ssh_server = "172.26.158.113";
-my $ssh_user = "root";
 
-my $serchclient = "$cur_dir/../wMOS/searchClient.pl";
-my $collectData = "collectData";
-my $submitwmos = "$cur_dir/../wMOS/submitwmos.pl";
-
-my $video_name = "Eyesteelfilm-TrailerRiPARemixManifesto882-computer";
 
 #mac address regexp
 my $d = "[0-9A-Fa-f]";
@@ -70,9 +60,9 @@ EndHTML
 	my $client_mac = param('client_mac');
 	my $output = param('output');
 	
-	my $pout = `$ssh $ssh_server -l $ssh_user "kill -TERM \`ps -ef | awk '\/$collectData\.pl.*$output\$\/ {print \$2}'\`"`;
-    #print "$ssh $ssh_server -l $ssh_user '$submitwmos $output $wMOS'";
-	#my $copy_log = `scp $ssh_user\@$ssh_server:/wMOS/data/$output* /var/www/wMOS/.`;
+	my $pout = `$ssh $wmosserver -l $wmosuser "kill -TERM \`ps -ef | awk '\/$collectData\.pl.*$output\$\/ {print \$2}'\`"`;
+    #print "$ssh $wmosserver -l $wmosuser '$submitwmos $output $wMOS'";
+	#my $copy_log = `scp $wmosuser\@$wmosserver:/wMOS/data/$output* /var/www/wMOS/.`;
 	my $log_URL = "http://$host/wMOS/data";
 	print <<ENDHTML;
 		<p>The wMOS test has finished, test Session details is listed below </p> 
@@ -80,7 +70,7 @@ EndHTML
 		<a href='$log_URL'>Logs</p>
 ENDHTML
     
-	my $submit = `$ssh $ssh_server -l $ssh_user '$submitwmos $output $wMOS'`;
+	my $submit = `$ssh $wmosserver -l $wmosuser '$submitwmos $output $wMOS'`;
 } else {
 	my $timestamp = time();
 	my $client_mac = param('client_mac');
@@ -97,9 +87,9 @@ ENDHTML
 ENDHTML
 	
 	if( $client_mac =~ /($dd){6}|$dd(([:-])$dd){5}/ && $client_mac ne "FF:FF:FF:FF:FF:FF"){
-		$cmd = "$ssh $ssh_server -l $ssh_user '$perl $serchclient $client_ip $output $client_mac $local'";		
+		$cmd = "$ssh $wmosserver -l $wmosuser '$perl $serchclient $client_ip $output $client_mac $local'";		
 	} else {
-		$cmd = "$ssh $ssh_server -l $ssh_user '$perl $serchclient $client_ip $output $local'";		
+		$cmd = "$ssh $wmosserver -l $wmosuser '$perl $serchclient $client_ip $output $local'";		
 	}
 	my $ssh_log = `$cmd`;
 	if ($ssh_log){
@@ -118,12 +108,18 @@ ENDHTML
 		</script>
 ENDHTML
 	print "<select name='videolist' id='videolist'>\n";
+	my $default = 1;
 	foreach my $video (keys %video_list){
-		print "<option selected='$video' value='$video'>$video</option>\n";
+		if($default){
+			print "<option selected='$video' value='$video'>$video</option>\n";
+			$default = 0;
+		} else {
+			print "<option value='$video'>$video</option>\n";
+		}
 	}
 	print "</select>\n";
 	
-	my $default = 1;
+	$default = 1;
 	foreach my $video (keys %video_list){
 		if($default){
 			print "<div id='$video' class='video' style='display: block'>\n";

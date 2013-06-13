@@ -22,7 +22,7 @@ my $log_dir = "$FindBin::Bin/tmp";
 require "$FindBin::Bin/common_snmp.pl";
 require "$FindBin::Bin/conf/wmos.conf";
 
-my ($host, $community, $client_ip, $client_mac_dec, $ap_mac_dec, $ap_ip, $ap_slot_id, $client_ch, $output, @threads, $ERR, $WARN, $samplingrate);
+my ($host, $community, $client_ip, $client_mac_dec, $ap_mac_dec, $ap_ip, $ap_slot_id, $client_ch, $output, @threads, $ERR, $WARN);
 $SIG{TERM} = \&interrupt;
 my $term = 1;
 

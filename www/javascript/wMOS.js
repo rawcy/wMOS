@@ -14,20 +14,21 @@ function pageload()
 
 function checkMACAddress() {
 	var macAddress=document.getElementById('mac').value;
-	var macAddressRegExp=/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/i;
-	var mavFF=/^([0|F|f]{2}:){5}[0|F|f]{2}$/i;
+	var macAddressRegExp1=/^(?:[0-9A-F]{2}([-:]))(?:[0-9A-F]{2}\1){4}[0-9A-F]{2}$/i;
+	var macAddressRegExp2=/^([0-9A-F]{4}[.]){2}[0-9A-F]{4}$/i;
+	var invalidmac=/^([0|F]{2}:){5}[0|F]{2}$/i;
 	
-	if (mavFF.test(macAddress) == true) {
+	if (invalidmac.test(macAddress) == true) {
 		alert("please enter a valid mac address\nexample XX:XX:XX:XX:XX:XX\nX = 0-9,A-F,a-f");
 		return false;
 	}
 	
-	if(macAddress.length!=17) {
+	if(!(macAddress.length==17 || macAddress.length==14)) {
 		alert('Mac Address is not the proper length.');
 		return false;
 	}
 
-	if (macAddressRegExp.test(macAddress)==false) { //if match failed
+	if (macAddressRegExp1.test(macAddress)==false && macAddressRegExp2.test(macAddress)==false) { //if match failed
 		alert("Please enter a valid MAC Address.\nexample XX:XX:XX:XX:XX:XX\nX = 0-9,A-F,a-f");
 		return false;
 	}
